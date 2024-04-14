@@ -8,3 +8,11 @@
 First Run `generate_dataset.py` in `\script`
 ### Step2 Run model and evaluate
 Run `LinearRegression.py` or `LSTM.py` in `\script`
+
+
+### Results
+Linear Regression (with map)
+![](pictures/LinearRegression.png)
+
+LSTM
+![](pictures/LSTM.png)
