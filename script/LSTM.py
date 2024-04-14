@@ -51,11 +51,12 @@ X_train_tensor = X_train.reshape(X_train.shape[0], 1, X_train.shape[1])
 X_test_tensor = X_test.reshape(X_test.shape[0], 1, X_test.shape[1])
 
 # --------------trainning------------------
+INPUT_FEATURES_NUM = X.shape[1]
+OUTPUT_FEATURES_NUM = X.shape[1]
 model = Sequential()
-model.add(LSTM(4, input_shape=(1, 1)))
+model.add(LSTM(4, input_shape=(1, INPUT_FEATURES_NUM)))
 model.add(Dense(1))
 model.compile(optimizer='adam', loss='mse')
-
 model.fit(X_train_tensor, y_train, epochs=20, batch_size=1, verbose=2)
 
 X_train_predict = model.predict(X_train_tensor)
