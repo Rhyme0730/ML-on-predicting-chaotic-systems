@@ -1,54 +1,95 @@
+from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.metrics import mean_squared_error as mse
+
 from keras.models import Sequential
 from keras.layers import LSTM, Dense
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.metrics import mean_squared_error
 
-# Assuming `data` is your 10000x2 ndarray from the double pendulum simulation
-# Normalize the dataset
+
+TF_ENABLE_ONEDNN_OPTS=0
+
+def create_lstm_dataset(dataset, forward_time=1):
+    """
+    input: dataset: time series data , forward_time: predict length
+    output: dataset for trainning and testing
+    """
+    size = len(dataset) - forward_time
+    X_data = dataset[0:size, :]
+    y_data = dataset[forward_time:len(dataset), :]
+    return X_data, y_data
+
+# Preprocess data
+all_data = pd.read_csv('double_pendulum_dataset.csv')
+all_data = all_data.values   # Column 0: theta1 / 1:theta2 / 2:time / 3: P1_x / 4:P1_y / 5:P2_x / 6:P2_y
+all_data = all_data.astype('float32')
+
+index_x = [5]
+X = all_data[:, index_x]   # extract input feature
+time = all_data[:, 2]
+
 scaler = MinMaxScaler(feature_range=(0, 1))
-data_normalized = scaler.fit_transform(P2)
+X = scaler.fit_transform(X)  # Transform input to [0, 1]
+train_size = int(len(X) * 0.67)
+test_size = len(X)-train_size
+train_data, test_data = X[0:train_size, :], X[train_size:, :]
 
-# Convert an array of values into a dataset matrix
-def create_dataset(dataset, look_back=1):
-    X, Y = [], []
-    for i in range(len(dataset)-look_back-1):
-        a = dataset[i:(i+look_back), :]
-        X.append(a)
-        Y.append(dataset[i + look_back, :])
-    return np.array(X), np.array(Y)
+forward_time = 1
+X_train, y_train = create_lstm_dataset(train_data, forward_time=forward_time)
+X_test, y_test = create_lstm_dataset(test_data, forward_time=forward_time)
+train_time, test_time = time[0:train_size], time[train_size:]
 
-# Split into train and test sets, reshape into [samples, time steps, features]
-train_size = int(len(data_normalized) * 0.67)
-test_size = len(data_normalized) - train_size
-train, test = data_normalized[0:train_size,:], data_normalized[train_size:len(data_normalized),:]
-look_back = 1
-trainX, trainY = create_dataset(train, look_back)
-testX, testY = create_dataset(test, look_back)
+print(f'X_train dataset size:{X_train.shape}')
+print(f'y_train dataset size:{y_train.shape}')
+print(f'X_test dataset size:{X_test.shape}')
+print(f'y_test dataset size:{y_test.shape}')
 
-# Reshape input to be [samples, time steps, features]
-trainX = np.reshape(trainX, (trainX.shape[0], trainX.shape[1], 2))
-testX = np.reshape(testX, (testX.shape[0], testX.shape[1], 2))
+X_train_tensor = X_train.reshape(X_train.shape[0], 1, X_train.shape[1])
+X_test_tensor = X_test.reshape(X_test.shape[0], 1, X_test.shape[1])
 
-# Create and fit the LSTM network
+# --------------trainning------------------
 model = Sequential()
-model.add(LSTM(50, input_shape=(look_back, 2)))
-model.add(Dense(2))
-model.compile(loss='mean_squared_error', optimizer='adam')
-model.fit(trainX, trainY, epochs=100, batch_size=1, verbose=2)
+model.add(LSTM(4, input_shape=(1, 1)))
+model.add(Dense(1))
+model.compile(optimizer='adam', loss='mse')
 
-# Make predictions
-trainPredict = model.predict(trainX)
-testPredict = model.predict(testX)
+model.fit(X_train_tensor, y_train, epochs=20, batch_size=1, verbose=2)
 
-# Invert predictions to original scale
-trainPredict = scaler.inverse_transform(trainPredict)
-trainY = scaler.inverse_transform(trainY)
-testPredict = scaler.inverse_transform(testPredict)
-testY = scaler.inverse_transform(testY)
+X_train_predict = model.predict(X_train_tensor)
+X_test_predict = model.predict(X_test_tensor)
 
-# Calculate root mean squared error
-trainScore = np.sqrt(mean_squared_error(trainY[:,0], trainPredict[:,0]))
-testScore = np.sqrt(mean_squared_error(testY[:,0], testPredict[:,0]))
-print('Train Score: %.2f RMSE' % (trainScore))
-testScore = np.sqrt(mean_squared_error(testY[:,1], testPredict[:,1]))
-print('Test Score: %.2f RMSE' % (testScore))
+X_train_predict = scaler.inverse_transform(X_train_predict)
+y_train = scaler.inverse_transform(y_train)
+X_test_predict = scaler.inverse_transform(X_test_predict)
+y_test = scaler.inverse_transform(y_test)
+
+train_score = mse(X_train_predict, y_train)
+test_score = mse(X_test_predict, y_test)
+
+print(f'Train_score: MSE = {train_score}')
+print(f'Test_score: MSE = {test_score}')
+
+# Plot train and test performance
+plt.figure()
+
+plt.subplot(211)
+plt.xlabel('time (s)')
+plt.ylabel('y position (m)')
+plt.scatter(test_time[0:test_size-forward_time], y_test, label='Test Target Output')
+plt.scatter(test_time[forward_time:test_size], X_test_predict, label='Test Predict Output')
+plt.legend()
+plt.grid()
+plt.title(f'Test Performance')
+
+plt.subplot(212)
+plt.xlabel('time (s)')
+plt.ylabel('y position (m)')
+plt.scatter(train_time[0:train_size-forward_time], y_train, label='Train Target Output')
+plt.scatter(train_time[forward_time:train_size], X_train_predict, label='Train Predict Output')
+plt.legend()
+plt.grid()
+plt.title(f'Train Performance')
+plt.show()
