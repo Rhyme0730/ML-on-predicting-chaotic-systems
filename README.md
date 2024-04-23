@@ -1,5 +1,5 @@
 # ML-on-predicting-chaotic-systems
-2024.4.23 update: we uploaded our ![presentation video](https://youtu.be/QoBRMm2b1gU)
+2024.4.23 update: we uploaded our [presentation video](https://youtu.be/QoBRMm2b1gU)
 ## Requirement
 - Keras
 - Tensorflow
