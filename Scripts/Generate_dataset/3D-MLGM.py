@@ -12,22 +12,23 @@ k = np.array([0.1, 3, 4, 0.1, 0.1])   # k0 = 0.1, k1 = 200, k2 in [-200, -0.01],
 initial_states = np.array([0.1, 0.1, 0.1])
 a = 0.1
 b = 1
-t = 40000
+t = 50000  ## t = 50s, dt = 0.01
 
 x = np.zeros(t)
 y = np.zeros(t)
 q = np.zeros(t)
+x[0], y[0], q[0] = initial_states
 for n in range(t-1):
-    x[0], y[0], q[0] = initial_states
+    # noise = 2*np.random.rand()-1
     x[n+1] = k[1]*np.cos(y[n]*(1-y[n]))
     y[n+1] = k[2]*(np.exp(a*x[n]*x[n])-b) + k[0]*np.cos(q[n])*y[n]
     q[n+1] = k[3]*y[n] + k[4]*q[n]
 
 data = np.vstack((x, y, q))
-save_data = data.T
+
 extracted_data = data[:, ::10]
 show_data = extracted_data
-
+save_data = data.T
 # Show in fig
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
@@ -42,9 +43,11 @@ ax.set_xlabel('x')
 ax.set_ylabel('y')
 ax.set_zlabel('q')
 plt.show()
-
 # Save to CSV
-df = pd.DataFrame(save_data, columns=['x', 'y', 'q'])
-csv_path = '3D-MLCM_dataset.csv'
-df.to_csv(csv_path, index=False)
+# df = pd.DataFrame(save_data, columns=['x', 'y', 'q'])
+# csv_path = '3D-MLGM_dataset.csv'
+# df.to_csv(csv_path, index=False)
 
+df = pd.DataFrame(save_data, columns=['x', 'y', 'q'])
+csv_path = 'k13.csv'
+df.to_csv(csv_path, index=False)
