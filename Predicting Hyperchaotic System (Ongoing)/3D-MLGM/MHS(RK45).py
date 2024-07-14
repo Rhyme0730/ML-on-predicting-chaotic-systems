@@ -1,10 +1,12 @@
 '''
 Description: This code is used for generating time series dataset of Discrete Memristive Hyperchaotic Systems (MHS)
             Dataset: Time| States
+
+@author: Huaiyuan Rao
 '''
 
 import numpy as np
-from scipy.integrate import solve_ivp, odeint
+from scipy.integrate import solve_ivp, odeint, RK23
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -38,18 +40,18 @@ def generate_dataset(initial_states, t, dt):
     @description: 3D-MLGM system dataset (using RK45)
     '''
     tspan = (0, t)
-    sys_output = solve_ivp(MHS, tspan, initial_states)
+    sys_output = solve_ivp(MHS, tspan, initial_states, method='RK23')
 
     return sys_output
 
-output = generate_dataset(initial_states, 20, 0.001)
+output = generate_dataset(initial_states, 20, 0.01)
 data = output.y
 data = data.T
 
 # Save to CSV
-df = pd.DataFrame(data, columns=['x', 'y', 'q'])
-csv_path = '3D-MLCM_dataset.csv'
-df.to_csv(csv_path, index=False)
+# df = pd.DataFrame(data, columns=['x', 'y', 'q'])
+# csv_path = '3D-MLCM_dataset.csv'
+# df.to_csv(csv_path, index=False)
 
 
 # Show in fig

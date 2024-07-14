@@ -48,6 +48,6 @@ plt.show()
 # csv_path = '3D-MLGM_dataset.csv'
 # df.to_csv(csv_path, index=False)
 
-df = pd.DataFrame(save_data, columns=['x', 'y', 'q'])
-csv_path = 'k13.csv'
-df.to_csv(csv_path, index=False)
+# df = pd.DataFrame(save_data, columns=['x', 'y', 'q'])
+# csv_path = 'k13.csv'
+# df.to_csv(csv_path, index=False)
