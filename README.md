@@ -4,3 +4,8 @@ Link to Reservoir Computing python package: [reservoirpy](https://github.com/res
 
 ## To Do: 
   1. Find UKF package (Unscented Transform) or code it up in Python
+
+
+## Related Topic
+1. sparse identification of nonlinear dynamical systems (SINDy)
+2. Compressed sensing
