@@ -1,12 +1,11 @@
 # ML on Predicting Chaotic Systems
+Predict chaotic system dynamics using:
 
-Predict short-horizon chaotic system dynamics from time series using:
+- **Long short-term memory (LSTM) with [PyTorch](https://pytorch.org/)**
+- **Reservoir Computing (RC) with [ReservoirPy](https://github.com/reservoirpy/reservoirpy)**
+- **Next-Generation Reservoir Computing (NG-RC) with [ReservoirPy](https://github.com/reservoirpy/reservoirpy)**
 
-- **LSTM (PyTorch)**
-- **Reservoir Computing (RC / ESN) with [ReservoirPy](https://github.com/reservoirpy/reservoirpy)**
-- **Next-Generation Reservoir Computing (NG-RC) via ReservoirPy `NVAR` + ridge regression**
-
-The project includes experiments on common chaotic attractors (e.g., **Lorenz**, **Rössler**, **Chen**, **Qi**) and a noisy-data setting.
+The project includes experiments on common 3-D chaotic attractors (e.g., **Lorenz**, **Rössler**, **Chen**, **Qi**) and a noisy-data setting.
 
 ![Chaotic systems](Figure/chaotic%20systems.png)
 
@@ -16,25 +15,25 @@ The project includes experiments on common chaotic attractors (e.g., **Lorenz**,
   - Column 0: time
   - Columns 1–3: system states (x, y, z)
 - **Experiments (Jupyter notebooks)**: `code/Experiments/`
-  - `LSTM.ipynb`: PyTorch LSTM forecaster (uses `reservoirpy.observables` for `nrmse`/`rsquare`)
-  - `RC.ipynb`: ESN / reservoir computing with ReservoirPy (`Reservoir >> Ridge`)
+  - `LSTM.ipynb`: PyTorch LSTM model 
+  - `RC.ipynb`: RC with ReservoirPy (`Reservoir >> Ridge`)
   - `NGRC.ipynb`: NG-RC with ReservoirPy (`NVAR >> Ridge`)
   - `noise_*.ipynb`: noisy-data experiments (e.g., noisy Lorenz)
 - **Figures**: `Figure/Task1/`, `Figure/Task2/`
 
 ## Methods (high level)
 
-- **One-step forecasting**: learn \( \hat{x}_{t+1} = f(x_t) \) on \((x_t, x_{t+1})\) pairs (3D states).
-- **LSTM**: sequence model trained with MSE loss on normalized data; rolled forward for prediction.
-- **RC / ESN (ReservoirPy)**: fixed random recurrent reservoir + trained linear readout (ridge regression).
-- **NG-RC (ReservoirPy NVAR)**: feature expansion of delayed coordinates (nonlinear vector autoregression) + ridge readout.
+- **Multi-step forecasting (autoregressive rollout)**: train a one-step model \( \hat{x}_{t+1}=f(x_t) \), then generate multi-step predictions by feeding \(\hat{x}_{t+1}\) back as input to predict \(\hat{x}_{t+2}, \hat{x}_{t+3}, \dots\).
+- **LSTM**: sequence model trained with MSE loss on normalized data; rolled forward autoregressively for multi-step prediction.
+- **RC**: fixed random recurrent reservoir + trained linear readout (ridge regression).
+- **NG-RC**: feature expansion of delayed coordinates (nonlinear vector autoregression) + ridge readout.
 - **Metrics**: `NRMSE` and `R^2` (via `reservoirpy.observables`).
 
 ## Setup
 
 ### Prerequisites
 
-- **Python 3.9+**
+- Python 3.9+
 - Jupyter environment (JupyterLab or classic Notebook)
 
 ### Install dependencies
@@ -42,7 +41,6 @@ The project includes experiments on common chaotic attractors (e.g., **Lorenz**,
 Create/activate an environment (recommended), then install:
 
 ```bash
-pip install -U pip
 pip install -U numpy pandas matplotlib jupyter reservoirpy torch
 ```
 
@@ -56,6 +54,8 @@ From the repo root:
 ```bash
 jupyter lab
 ```
+
+First run `code/Generate_dataset/generate_chaotic_dataset.ipynb` to generate all chaotic systems' time series. Feel free to change the time horizon variable `tspan`.
 
 Then open and run notebooks in `code/Experiments/` top-to-bottom:
 
@@ -88,11 +88,18 @@ Generated plots are saved under `Figure/` (Task-specific subfolders). Typical ou
 - 3D attractor reconstructions
 - Long-horizon rollout behavior comparisons
 
-## Reproducibility tips
-
-- If you re-run reservoirs, set a fixed seed (ReservoirPy supports `rpy.set_seed(...)`).
-- Results can vary with hyperparameters (reservoir size, spectral radius, leak rate, ridge strength; or LSTM hidden size/layers/learning rate).
-
-## Acknowledgements
-
-- Reservoir computing tooling is provided by **ReservoirPy**.
+## Cite this work
+```
+@article{NSCE05500,
+  title={Predicting chaotic system behavior using machine learning techniques},
+  author={Rao, Huaiyuan and Zhao, Yichen and Chen, Hsuan-Pin},
+  journal={Nonlinear Science and Control Engineering},
+  issn={TBA},
+  volume={1},
+  number={1},
+  pages={025290003},
+  doi={https://doi.org/10.36922/NSCE025290003},
+  url={https://accscience.com/journal/NSCE/1/1/10.36922/NSCE025290003},
+  year={2025}
+}
+```
