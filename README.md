@@ -23,7 +23,7 @@ The project includes experiments on common 3-D chaotic attractors (e.g., **Loren
 
 ## Methods (high level)
 
-- **Multi-step forecasting (autoregressive rollout)**: train a one-step model \( \hat{x}_{t+1}=f(x_t) \), then generate multi-step predictions by feeding \(\hat{x}_{t+1}\) back as input to predict \(\hat{x}_{t+2}, \hat{x}_{t+3}, \dots\).
+- **Multi-step forecasting (autoregressive rollout)**: train a one-step model $\hat{x}_{t+1}=f(x_t)$, then generate multi-step predictions by feeding $\hat{x}_{t+1}$ back as input to predict $\hat{x}_{t+2}, \hat{x}_{t+3}, \dots$.
 - **LSTM**: sequence model trained with MSE loss on normalized data; rolled forward autoregressively for multi-step prediction.
 - **RC**: fixed random recurrent reservoir + trained linear readout (ridge regression).
 - **NG-RC**: feature expansion of delayed coordinates (nonlinear vector autoregression) + ridge readout.
