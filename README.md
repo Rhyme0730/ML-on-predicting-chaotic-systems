@@ -8,11 +8,11 @@ Predict short-horizon chaotic system dynamics from time series using:
 
 The project includes experiments on common chaotic attractors (e.g., **Lorenz**, **Rössler**, **Chen**, **Qi**) and a noisy-data setting.
 
-![Chaotic systems](code/Figure/chaotic%20systems.png)
+![Chaotic systems](Figure/chaotic%20systems.png)
 
 ## What’s in this repo
 
-- **Datasets**: multivariate time series in `code/Dataset/*.csv`
+- **Datasets**: multivariate time series in `Dataset/*.csv`
   - Column 0: time
   - Columns 1–3: system states (x, y, z)
 - **Experiments (Jupyter notebooks)**: `code/Experiments/`
@@ -20,7 +20,7 @@ The project includes experiments on common chaotic attractors (e.g., **Lorenz**,
   - `RC.ipynb`: ESN / reservoir computing with ReservoirPy (`Reservoir >> Ridge`)
   - `NGRC.ipynb`: NG-RC with ReservoirPy (`NVAR >> Ridge`)
   - `noise_*.ipynb`: noisy-data experiments (e.g., noisy Lorenz)
-- **Figures**: `code/Figure/Task1/`, `code/Figure/Task2/`
+- **Figures**: `Figure/Task1/`, `Figure/Task2/`
 
 ## Methods (high level)
 
@@ -72,19 +72,17 @@ Then open and run notebooks in `code/Experiments/` top-to-bottom:
 
 ```text
 .
+├── Dataset/                     # CSV datasets for each chaotic system
+├── Figure/                      # Saved plots (Task-specific subfolders)
 ├── code/
-│   ├── Dataset/                 # CSV datasets for each chaotic system
 │   ├── Experiments/             # Notebooks (LSTM, RC/ESN, NG-RC, noise variants)
-│   ├── Figure/
-│   │   ├── Task1/               # Clean-data plots and long-horizon visuals
-│   │   └── Task2/               # Noisy-data plots
 │   └── Generate_dataset/        # Dataset generation notebooks
 └── README.md
 ```
 
 ## Results
 
-Generated plots are saved under `code/Figure/` (Task-specific subfolders). Typical outputs include:
+Generated plots are saved under `Figure/` (Task-specific subfolders). Typical outputs include:
 
 - Ground-truth trajectories vs model predictions (x/y/z)
 - 3D attractor reconstructions
